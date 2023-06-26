@@ -2,10 +2,6 @@ import Head from "next/head";
 import { useEffect } from "react";
 
 export default function Home() {
-  const authHref = `/api/auth/login`;
-  useEffect(() => {
-    location.replace(authHref);
-  }, [authHref]);
   return (
     <>
       <Head>
@@ -14,10 +10,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <p>
-          Redirecting to Creatorsgarten.org… <a href={authHref}>Click here</a>{" "}
-          if you are not redirected.
-        </p>
+        <p>:)</p>
       </main>
     </>
   );
