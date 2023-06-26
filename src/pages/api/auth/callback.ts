@@ -27,6 +27,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  await handleCors(req, res);
   const idToken = String(req.body?.id_token ?? req.query.id_token);
   const result = await validate(idToken);
   const email = String(result.payload.email);
@@ -34,7 +35,6 @@ export default async function handler(
   try {
     await ensureUser(email, password);
     if (req.query.response_mode === "json") {
-      await handleCors(req, res);
       res.json({ email, password });
     } else {
       const credentials = encodeURIComponent(
