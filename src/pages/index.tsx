@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useEffect } from "react";
 
 export default function Home() {
-  const authHref = `/api/login`;
+  const authHref = `/api/auth/login`;
   useEffect(() => {
     location.replace(authHref);
   }, [authHref]);
