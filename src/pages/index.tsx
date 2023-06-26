@@ -2,14 +2,7 @@ import Head from "next/head";
 import { useEffect } from "react";
 
 export default function Home() {
-  const redir = `${
-    process.env.NEXT_PUBLIC_VERCEL_URL
-      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-      : "http://localhost:3000"
-  }/api/auth/callback`;
-  const authHref = `https://creatorsgarten.org/auth/authorize?client_id=https://db.creatorsgarten.org&scope=openid+email&response_type=id_token&redirect_uri=${encodeURIComponent(
-    redir
-  )}`;
+  const authHref = `/api/login`;
   useEffect(() => {
     location.replace(authHref);
   }, [authHref]);
