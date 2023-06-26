@@ -1,8 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { randomUUID } from "crypto";
 import axios from "axios";
-
+import cors from "cors";
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import { initMiddleware } from "init-middleware";
+
+const handleCors = initMiddleware(cors());
 
 const baseURL = process.env.NOCODB_URL || "https://db.creatorsgarten.org";
 
@@ -24,22 +27,29 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const idToken = String(req.query.id_token);
+  const idToken = String(req.body?.id_token ?? req.query.id_token);
   const result = await validate(idToken);
   const email = String(result.payload.email);
   const password = randomUUID();
   try {
     await ensureUser(email, password);
-    const credentials = encodeURIComponent(JSON.stringify({ email, password }));
-    const random1 = Array.from({ length: 8 }, () => crypto.randomUUID()).join(
-      "-"
-    );
-    const random2 = Array.from({ length: 8 }, () => crypto.randomUUID()).join(
-      "-"
-    );
-    res.redirect(
-      `${baseURL}/sso#random1=${random1}&credentials=${credentials}&random2=${random2}`
-    );
+    if (req.query.response_mode === "json") {
+      await handleCors(req, res);
+      res.json({ email, password });
+    } else {
+      const credentials = encodeURIComponent(
+        JSON.stringify({ email, password })
+      );
+      const random1 = Array.from({ length: 8 }, () => crypto.randomUUID()).join(
+        "-"
+      );
+      const random2 = Array.from({ length: 8 }, () => crypto.randomUUID()).join(
+        "-"
+      );
+      res.redirect(
+        `${baseURL}/sso#random1=${random1}&credentials=${credentials}&random2=${random2}`
+      );
+    }
   } catch (error) {
     res.status(500).json({ error: String(error) } as any);
   }
