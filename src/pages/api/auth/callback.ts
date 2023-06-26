@@ -34,22 +34,7 @@ export default async function handler(
   const password = randomUUID();
   try {
     await ensureUser(email, password);
-    if (req.query.response_mode === "json") {
-      res.json({ email, password });
-    } else {
-      const credentials = encodeURIComponent(
-        JSON.stringify({ email, password })
-      );
-      const random1 = Array.from({ length: 8 }, () => crypto.randomUUID()).join(
-        "-"
-      );
-      const random2 = Array.from({ length: 8 }, () => crypto.randomUUID()).join(
-        "-"
-      );
-      res.redirect(
-        `${baseURL}/sso#random1=${random1}&credentials=${credentials}&random2=${random2}`
-      );
-    }
+    res.json({ email, password });
   } catch (error) {
     res.status(500).json({ error: String(error) } as any);
   }
